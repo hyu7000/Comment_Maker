@@ -40,6 +40,17 @@ function activate(context) {
 	});
 
 	context.subscriptions.push(disposable);
+
+	// 상태 바 항목 생성
+    let statusBarBtn = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+    statusBarBtn.command = 'comment-maker.GenerateComment'; // 이 항목을 클릭했을 때 실행할 명령어
+    statusBarBtn.text = "$(comment) Add Comment"; // 버튼에 표시될 텍스트 및 아이콘 (예: Octicon 아이콘 사용)
+    statusBarBtn.tooltip = "Generate Comment"; // 버튼에 마우스를 올렸을 때 표시될 툴팁
+
+    statusBarBtn.show(); // 상태 바 항목을 표시
+    context.subscriptions.push(statusBarBtn);
+
+	console.log('추가됨');
 }
 
 // This method is called when your extension is deactivated
