@@ -1,7 +1,8 @@
 {
   "name": "comment-maker",
   "displayName": "Comment_Maker",
-  "description": "",
+  "description": "Comment_Maker help us to add comment for generating docs.\nit will be reduce time to writing code and a typing error.",
+  "publisher": "hyu7000",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.86.0"
@@ -9,12 +10,19 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": ["*"],
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:yourExtension.showWebView"
+  ],
   "main": "./extension.js",
   "contributes": {
     "commands": [{
       "command": "comment-maker.GenerateComment",
       "title": "Generate Comment for Sure"
+    },
+    {
+      "command": "yourExtension.showWebView",
+      "title": "Show Custom Webview"
     }]
   },
   "scripts": {
@@ -30,5 +38,9 @@
     "typescript": "^5.3.3",
     "@vscode/test-cli": "^0.0.4",
     "@vscode/test-electron": "^2.3.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyu7000/Comment_Maker.git"
   }
 }

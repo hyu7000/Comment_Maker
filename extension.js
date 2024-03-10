@@ -1,6 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
+const fs = require('fs');
+const path = require('path');
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -9,39 +11,19 @@ const vscode = require('vscode');
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('comment-maker.GenerateComment', function () {
-		let line_index = getTotalLines();
+    // The command has been defined in the package.json file
+    // Now provide the implementation of the command with  registerCommand
+    // The commandId parameter must match the command field in package.json
 
-		while(line_index >= 0) {
-			let match_info = parseFunctionDeclaration(line_index);
+    // 주석 생성 커맨드 초기화
+    let gen_comment = initGenCommand()
+    context.subscriptions.push(gen_comment);
 
-			if (match_info != null)
-			{
-				let comment = generateCommentFunction(match_info);
-				insertTextFromLine(line_index, comment);
-			}
-			
-			line_index -= 1;
-		}
+    // 웹뷰 초기화
+    let open_page = initWebView(context)
+    context.subscriptions.push(open_page);
 
-		let fisrt_line_withoud_comment = findFirstHashLineIndex();
-
-		if (fisrt_line_withoud_comment != -1) {
-			let comment = generateCommentFile();
-			comment += '\n' + generateCommentComponent();
-			insertTextFromLine(fisrt_line_withoud_comment-1, comment);
-		}
-
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Completed add a comment');
-	});
-
-	context.subscriptions.push(disposable);
-
-	// 상태 바 항목 생성
+    // 상태 바 항목 생성
     let statusBarBtn = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
     statusBarBtn.command = 'comment-maker.GenerateComment'; // 이 항목을 클릭했을 때 실행할 명령어
     statusBarBtn.text = "$(comment) Add Comment"; // 버튼에 표시될 텍스트 및 아이콘 (예: Octicon 아이콘 사용)
@@ -50,7 +32,7 @@ function activate(context) {
     statusBarBtn.show(); // 상태 바 항목을 표시
     context.subscriptions.push(statusBarBtn);
 
-	console.log('추가됨');
+    console.log('추가됨');
 }
 
 // This method is called when your extension is deactivated
@@ -172,53 +154,116 @@ function findFirstHashLineIndex() {
 
 
 // match_info 를 매개변수로 받고, 주석을 생성하는 함수
-function generateCommentFunction(match_info){
-	let comment = '/*S\n * @function';
+function generateCommentFunction(match_info) {
+    let comment = '/*S\n * @function';
 
-	comment += '\n * @name : ' + match_info.functionName
-	
-	if (match_info.parameters != 'void')
-	{
-		let count_param = countSubstrings(match_info.parameters)
-	
-		for (let i = 0; i < count_param; i++)
-		{
-			comment += '\n * @parameter : '
-		}
-	}
+    comment += '\n * @name : ' + match_info.functionName
 
-	if (match_info.returnType != 'void')
-	{
-		comment += '\n * @return : '
-	}
+    if (match_info.parameters != 'void') {
+        let count_param = countSubstrings(match_info.parameters)
 
-	comment += '\n * @description : \n*/'
+        for (let i = 0; i < count_param; i++) {
+            comment += '\n * @parameter : '
+        }
+    }
 
-	return comment
+    if (match_info.returnType != 'void') {
+        comment += '\n * @return : '
+    }
+
+    comment += '\n * @description : \n*/'
+
+    return comment
 }
 
 // 파일 관련 주석 반환하는 함수
-function generateCommentFile(){
-	let comment = '/*S\n * @file';
+function generateCommentFile() {
+    let comment = '/*S\n * @file';
 
-	comment += '\n * @description : ';
-	comment += '\n */';
+    comment += '\n * @description : ';
+    comment += '\n */';
 
-	return comment;
+    return comment;
 }
 
 // 컴포넌트 관련 주석 반환하는 함수
-function generateCommentComponent(){
-	let comment = '/*S\n * @component : ';
+function generateCommentComponent() {
+    let comment = '/*S\n * @component : ';
 
-	comment += '\n * @layer : ';
-	comment += '\n * @description : ';
-	comment += '\n */';
+    comment += '\n * @layer : ';
+    comment += '\n * @description : ';
+    comment += '\n */';
 
-	return comment;
+    return comment;
+}
+
+function initWebView(context) {
+    let web_view = vscode.commands.registerCommand('yourExtension.showWebView', function() {
+        const panel = vscode.window.createWebviewPanel(
+            'Settings Comment Generation', // 웹뷰 유형을 식별하는 문자열
+            'Settings Comment Generation', // 웹뷰 타이틀
+            vscode.ViewColumn.One, // 웹뷰를 표시할 열
+            {
+                enableScripts: true // Enable JavaScript in the webview
+            } // 웹뷰 옵션
+        );
+
+        const scriptSrc = vscode.Uri.joinPath(context.extensionUri, 'webview_script.js');
+        const scriptUri = panel.webview.asWebviewUri(scriptSrc).toString();
+
+        // 웹뷰 콘텐츠를 파일에서 읽기
+        const htmlPath = path.join(context.extensionPath, 'settingCommentGeneration.html');
+        let htmlContent = fs.readFileSync(htmlPath, 'utf8');
+
+        htmlContent = htmlContent.replace('SCRIPT_SRC_PLACEHOLDER', scriptUri);
+        panel.webview.html = htmlContent;
+
+        // 메시지 수신 리스너 설정
+        panel.webview.onDidReceiveMessage(message => {
+            switch (message.command) {
+                case 'saveText':
+                    // 여기서 메시지 처리
+                    console.log(message.text);
+                    break;
+                    // 추가적인 메시지 타입을 여기서 처리할 수 있습니다.
+            }
+        }, undefined, context.subscriptions);
+    });
+
+    return web_view;
+}
+
+function initGenCommand() {
+    let gen_comment = vscode.commands.registerCommand('comment-maker.GenerateComment', function() {
+        let line_index = getTotalLines();
+
+        while (line_index >= 0) {
+            let match_info = parseFunctionDeclaration(line_index);
+
+            if (match_info != null) {
+                let comment = generateCommentFunction(match_info);
+                insertTextFromLine(line_index, comment);
+            }
+
+            line_index -= 1;
+        }
+
+        let fisrt_line_withoud_comment = findFirstHashLineIndex();
+
+        if (fisrt_line_withoud_comment != -1) {
+            let comment = generateCommentFile();
+            comment += '\n' + generateCommentComponent();
+            insertTextFromLine(fisrt_line_withoud_comment - 1, comment);
+        }
+
+        // Display a message box to the user
+        vscode.window.showInformationMessage('Completed add a comment');
+    });
+
+    return gen_comment;
 }
 
 module.exports = {
-	activate,
-	deactivate
+    activate,
+    deactivate
 }
