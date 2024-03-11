@@ -27,15 +27,32 @@ function addComment() {
 }
 
 function openTab(evt, tabName) {
-    var i, tabcontent, tabbuttons;
-    tabcontent = document.getElementsByClassName("tab-content");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-    }
-    tabbuttons = document.getElementsByClassName("tab-button");
-    for (i = 0; i < tabbuttons.length; i++) {
+    // 모든 탭 버튼의 'active' 클래스를 제거합니다.
+    var tabbuttons = document.getElementsByClassName("tab-button");
+    for (var i = 0; i < tabbuttons.length; i++) {
         tabbuttons[i].className = tabbuttons[i].className.replace(" active", "");
     }
-    document.getElementById(tabName).style.display = "block";
+
+    // 클릭된 탭 버튼에 'active' 클래스를 추가합니다.
     evt.currentTarget.className += " active";
+
+    // .content 영역을 가져옵니다.
+    var contentArea = document.querySelector('.content');
+
+    // 선택된 탭 이름에 따라 다른 콘텐츠를 표시합니다.
+    switch (tabName) {
+        case 'Tab1':
+            contentArea.innerHTML = '<h2>Tab 1 Content</h2><p>Here is the content for Tab 1.</p>';
+            break;
+        case 'Tab2':
+            contentArea.innerHTML = '<h2>Tab 2 Content</h2><p>Here is the content for Tab 2.</p>';
+            break;
+        case 'Tab3':
+            contentArea.innerHTML = '<h2>Tab 3 Content</h2><p>Here is the content for Tab 3.</p>';
+            break;
+        // 추가 탭에 대한 case를 여기에 추가할 수 있습니다.
+        default:
+            contentArea.innerHTML = '<p>Select a tab to see its content.</p>';
+            break;
+    }
 }

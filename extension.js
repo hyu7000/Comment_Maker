@@ -208,14 +208,18 @@ function initWebView(context) {
             } // 웹뷰 옵션
         );
 
-        const scriptSrc = vscode.Uri.joinPath(context.extensionUri, 'webview_script.js');
+        // 스타일시트 URI 생성
+        const styleUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'css', 'styles.css'));
+
+        const scriptSrc = vscode.Uri.joinPath(context.extensionUri, 'js', 'webview_script.js');
         const scriptUri = panel.webview.asWebviewUri(scriptSrc).toString();
 
         // 웹뷰 콘텐츠를 파일에서 읽기
-        const htmlPath = path.join(context.extensionPath, 'settingCommentGeneration.html');
+        const htmlPath = path.join(context.extensionPath, 'index.html');
         let htmlContent = fs.readFileSync(htmlPath, 'utf8');
 
-        htmlContent = htmlContent.replace('SCRIPT_SRC_PLACEHOLDER', scriptUri);
+        htmlContent = htmlContent.replace('SCRIPT_SRC_PLACEHOLDER', scriptUri)
+                                 .replace('STYLE_SRC_PLACEHOLDER', styleUri);
         panel.webview.html = htmlContent;
 
         // 메시지 수신 리스너 설정
