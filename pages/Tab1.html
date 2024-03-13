@@ -1,0 +1,29 @@
+<div>
+    <label class="comment-label" for="header_file">Header File</label>
+    <textarea id="autoresizing" oninput="autoResizeTextarea(this)" placeholder="Type something..."></textarea>
+    <label class="comment-label" for="c_file">C File</label>
+    <textarea id="comment_c_file"></textarea>
+    <label class="comment-label" for="Include">Include</label>
+    <textarea id="comment_include"></textarea>
+    <label class="comment-label" for="Macro">Macro</label>
+    <textarea id="comment_macro"></textarea>
+    <label class="comment-label" for="Global_Variable">Global Variable</label>
+    <textarea id="comment_global_variable"></textarea>
+    <label class="comment-label" for="Data_Structures">Data Structures</label>
+    <textarea id="comment_data_structures"></textarea>
+    <label class="comment-label" for="Function_Prototypes">Function Prototypes</label>
+    <textarea id="comment_function_prototypes"></textarea>
+    <label class="comment-label" for="Interrupt">Interrupt</label>
+    <textarea id="comment_interrupt"></textarea>
+    <label class="comment-label" for="Private_Function">Private Function</label>
+    <textarea id="comment_private_function"></textarea>
+    <label class="comment-label" for="Extern_Function">Extern Function</label>
+    <textarea id="comment_extern_function"></textarea>
+
+    <!-- 버튼 -->
+    <div style="float:right;" id="buttons"> 
+        <button class="w-btn" id="add-btn" onclick="addComment()">Add</button>
+        <button class="w-btn" type="button">Default</button>
+        <button class="w-btn" type="button">Save</button>
+    </div>
+</div>

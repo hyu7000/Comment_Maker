@@ -221,15 +221,23 @@ function initWebView(context) {
         htmlContent = htmlContent.replace('SCRIPT_SRC_PLACEHOLDER', scriptUri)
                                  .replace('STYLE_SRC_PLACEHOLDER', styleUri);
         panel.webview.html = htmlContent;
+        
+        // Tab1 초기화
+        const initialContentPath = path.join(context.extensionPath, 'pages', 'Tab1.html');
+        const initialContent = fs.readFileSync(initialContentPath, 'utf8');
+        panel.webview.postMessage({ command: 'updateContent', content: initialContent });
 
         // 메시지 수신 리스너 설정
         panel.webview.onDidReceiveMessage(message => {
             switch (message.command) {
                 case 'saveText':
-                    // 여기서 메시지 처리
                     console.log(message.text);
                     break;
-                    // 추가적인 메시지 타입을 여기서 처리할 수 있습니다.
+                case 'requestContent':
+                    const tabHtmlPath = path.join(context.extensionPath, 'pages', `${message.tabName}.html`);
+                    const tabContent = fs.readFileSync(tabHtmlPath, 'utf8');
+                    panel.webview.postMessage({ command: 'updateContent', content: tabContent });
+                    break;
             }
         }, undefined, context.subscriptions);
     });
