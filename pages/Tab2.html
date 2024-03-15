@@ -1,40 +1,17 @@
 <div>
-    <!-- 체크박스 목록 -->
-    <div class="checkbox_div">
-        <input type="checkbox" id="lang1" name="lang1" value="Java">
-        <label class="checkbox_label" for="lang1">Header File</label>
+    <div class="setting-item">
+        <label for="Project_name">Project Name</label>
+        <br> 
+        <input type="text" id="Project_name" name="setting1" value=<!--Project_name-->>
+    </div>
+    <div class="setting-item">
+        <label for="Reviser">Reviser</label>
+        <br>
+        <input type="text" id="Reviser" name="setting2" value=<!--Reviser-->>
     </div>
 
-    <div class="checkbox_div">
-        <input type="checkbox" id="item1" name="item1">
-        <label class="checkbox_label" for="item1">Include</label><br>
-    </div>
-
-    <div class="checkbox_div">
-        <input type="checkbox" id="item2" name="item2">
-        <label class="checkbox_label" for="item2">Macro</label><br>
-    </div>
-
-    <div class="checkbox_div">
-        <input type="checkbox" id="item3" name="item3">
-        <label class="checkbox_label" for="item3">Global Variable</label><br>
-    </div>
-
-    <div class="checkbox_div">
-        <input type="checkbox" id="item4" name="item4">
-        <label class="checkbox_label" for="item4">Data Structures</label><br>
-    </div>
-
-    <div class="checkbox_div">
-        <input type="checkbox" id="item5" name="item5">
-        <label class="checkbox_label" for="item5">Function Prototypes</label><br>
-    </div>
-
-    <!-- 버튼 -->
-    <div style="float:right;"> 
+    <div style="float:right;" id="buttons"> 
         <button class="w-btn" type="button">Default</button>
-        <button class="w-btn" type="button">Save</button>
+        <button class="w-btn" type="button" onclick="saveSettings()">Save</button>
     </div>
-
-    <div style="clear:both;"></div> <!-- 플로팅 해제 -->
 </div>

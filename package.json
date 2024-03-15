@@ -12,17 +12,21 @@
   ],
   "activationEvents": [
     "onStartupFinished",
-    "onCommand:yourExtension.showWebView"
+    "onCommand:comment-maker.Settings"
   ],
   "main": "./extension.js",
   "contributes": {
     "commands": [{
-      "command": "comment-maker.GenerateComment",
+      "command": "comment-maker.GenerateDetailComment",
       "title": "Generate Comment for Sure"
     },
     {
-      "command": "yourExtension.showWebView",
-      "title": "Show Custom Webview"
+      "command": "comment-maker.GenerateNormalComment",
+      "title": "Generate Comment for Sure"
+    },
+    {
+      "command": "comment-maker.Settings",
+      "title": "Show Custom Settings for Comment Generation"
     }]
   },
   "scripts": {

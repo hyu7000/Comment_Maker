@@ -158,3 +158,63 @@ input[type="submit"] {
 input:checked {
     outline: 2px solid yellow;
 }
+
+.toast {
+    visibility: hidden; /* 기본적으로는 보이지 않음 */
+    min-width: 250px; /* 메시지 박스의 최소 너비 */
+    background-color: black; /* 배경색 */
+    color: white; /* 텍스트 색상 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+    border-radius: 2px; /* 모서리 둥글게 */
+    padding: 16px; /* 내부 여백 */
+    position: fixed; /* 위치 고정 */
+    z-index: 1; /* 다른 요소들 위에 표시 */
+    left: 50%; /* 왼쪽에서 50% 위치 */
+    top: 50%; /* 상단에서 50% 위치 */
+    transform: translate(-50%, -50%); /* 정확한 중앙 위치로 조정 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 그림자 추가 */
+    font-size: 17px; /* 글씨 크기 */
+}
+
+.toast.show {
+    visibility: visible; /* 보이게 설정 */
+    opacity: 1; /* 완전 불투명 */
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s; /* 애니메이션 적용 */
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes fadein {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+
+@keyframes fadeout {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+
+.setting-item {
+    margin-bottom: 20px; /* 각 설정 요소 사이의 여백 */
+    display: block;
+}
+
+.setting-item label {
+    font-size: 20px;
+}
+
+.setting-item input[type="text"] {
+    width: 400px; 
+    height: 30px; /* 높이는 20px로 고정 */
+    line-height: 30px; /* 라인 높이도 20px로 설정하여 텍스트가 중앙에 위치하도록 함 */
+    margin-top: 10px;
+}
