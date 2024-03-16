@@ -12,17 +12,17 @@
   ],
   "activationEvents": [
     "onStartupFinished",
-    "onCommand:comment-maker.Settings"
+    "onLanguage:c"
   ],
   "main": "./extension.js",
   "contributes": {
     "commands": [{
       "command": "comment-maker.GenerateDetailComment",
-      "title": "Generate Comment for Sure"
+      "title": "Generate Detail Comment"
     },
     {
       "command": "comment-maker.GenerateNormalComment",
-      "title": "Generate Comment for Sure"
+      "title": "Generate Normal Comment"
     },
     {
       "command": "comment-maker.Settings",
