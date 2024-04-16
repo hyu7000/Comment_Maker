@@ -44,6 +44,10 @@ function activate(context) {
     // 저장된 데이터 불러오기
     checkSavedData(context);
 
+    // 디버깅 함수 생성
+    let debug = initTestCommand();
+    context.subscriptions.push(debug);
+
     // 디테일 주석 생성 커맨드 초기화
     let gen_detail_comment = initGenDetailCommand();
     context.subscriptions.push(gen_detail_comment);
@@ -114,7 +118,7 @@ function updateAtWordDecorations(activeEditor, decorationType, matchWords) {
     activeEditor.setDecorations(decorationType, atWordDecorations);
 }
 
-
+// 데코레이션 초기화
 function initDecorations(context) {
     const decorationType = vscode.window.createTextEditorDecorationType({
         color: '#3E9CD6' // 텍스트 색상을 파란색으로 설정
@@ -158,7 +162,7 @@ function getTextFromLine(lineIndex) {
     return lineText;
 }
 
-// 라인의 코드에서 함수 정규식이 매칭되는지 확인한다.
+// 라인의 코드에서 함수 선언 정규식이 매칭되는지 확인한다.
 function parseFunctionDeclaration(lineIndex) {
     const lineText = getTextFromLine(lineIndex);
 
@@ -166,8 +170,38 @@ function parseFunctionDeclaration(lineIndex) {
         return null;
     }
 
+    // Regular Expression
     const functionRegex = /(?:[a-zA-Z_][a-zA-Z0-9_]*\s+)*([a-zA-Z_][a-zA-Z0-9_]*\s+\**)([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)\s*;/;
     const match = lineText.match(functionRegex);
+
+    if (match) {
+        // match[1]에는 반환 타입이, match[2]에는 함수 이름이, match[3]에는 매개변수들이 포함됩니다.
+        const returnType = match[1].trim(); // 반환 타입
+        const functionName = match[2]; // 함수 이름
+        const parameters = match[3]; // 매개변수들
+
+        return {
+            returnType, // 반환 타입
+            functionName, // 함수 명
+            parameters // 매개변수들
+        };
+    }
+
+    // 매칭되지 않는 경우
+    return null;
+}
+
+// 라인의 코드에서 함수 정의 정규식이 매칭되는지 확인한다.
+function parseFunctionDefinition(lineIndex) {
+    const lineText = getTextFromLine(lineIndex);
+
+    if (lineText === null) {
+        return null;
+    }
+    
+    // Regular Expression
+    const functionDefinitionRegex = /^(?:[a-zA-Z_][a-zA-Z0-9_]*\s+)*([a-zA-Z_][a-zA-Z0-9_]*\s+\**)([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)\s*$/;
+    const match = lineText.match(functionDefinitionRegex);
 
     if (match) {
         // match[1]에는 반환 타입이, match[2]에는 함수 이름이, match[3]에는 매개변수들이 포함됩니다.
@@ -480,6 +514,37 @@ function initWebView(context) {
     });
 
     return web_view;
+}
+
+function initTestCommand() {
+    let gen_comment = vscode.commands.registerCommand('comment-maker.Debug_CM', function() {
+        let line_index = getTotalLines();
+
+        while (line_index >= 0) {
+            let match_info = parseFunctionDefinition(line_index);
+
+            if (match_info != null) {
+                // let comment = generateCommentFunction(match_info);
+                // insertTextFromLine(line_index, comment);
+                console.log(match_info);
+            }
+
+            line_index -= 1;
+        }
+
+        // let fisrt_line_withoud_comment = findFirstHashLineIndex();
+
+        // if (fisrt_line_withoud_comment != -1) {
+        //     let comment = generateCommentFile();
+        //     comment += '\n' + generateCommentComponent();
+        //     insertTextFromLine(fisrt_line_withoud_comment - 1, comment);
+        // }
+
+        // Display a message box to the user
+        vscode.window.showInformationMessage('Completed add a comment');
+    });
+
+    return gen_comment;
 }
 
 function initGenDetailCommand() {

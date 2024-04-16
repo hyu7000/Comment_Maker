@@ -28,6 +28,10 @@
     {
       "command": "comment-maker.Settings",
       "title": "Show Custom Settings for Comment Generation"
+    },
+    {
+      "command": "comment-maker.Debug_CM",
+      "title": "Debug_CM"
     }]
   },
   "scripts": {
