@@ -107,6 +107,16 @@ const DEFAULT_SETTING_DATA = {
     'Reviser':''
 };
 
+const KEYWORD_COMMENT = [
+    'function',
+    'name',
+    'parameter',
+    'description',
+    'file',
+    'component',
+    'layer'
+];
+
 module.exports = { 
     C_FILE_COMMENT,
     HEADER_FILE_COMMENT,
@@ -122,5 +132,7 @@ module.exports = {
     DEFAULT_COMMENTS,
     DEFAULT_HEADER_FILE_COMMENT_TYPES,
     DEFAULT_C_FILE_COMMENT_TYPES,
-    DEFAULT_SETTING_DATA
+    DEFAULT_SETTING_DATA,
+
+    KEYWORD_COMMENT
 };

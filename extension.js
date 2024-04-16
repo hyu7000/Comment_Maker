@@ -19,7 +19,9 @@ const {
     DEFAULT_COMMENTS,
     DEFAULT_HEADER_FILE_COMMENT_TYPES,
     DEFAULT_C_FILE_COMMENT_TYPES,
-    DEFAULT_SETTING_DATA
+    DEFAULT_SETTING_DATA,
+
+    KEYWORD_COMMENT
 } = require('./js/default_settings.js');
 
 let commentReplacements = {};
@@ -59,15 +61,25 @@ function activate(context) {
     context.subscriptions.push(genDetailCommentBtn);
 
     // 주석 데코레이션 설정
-    initDecorations(context);
-    
+    initDecorations(context);    
+
+    // 저장된 값 불러오기
+    restoreData(context);
 }
 
 // This method is called when your extension is deactivated
 function deactivate() {}
 
+function restoreData(context) {
+    const globalState = context.globalState;
+    
+    // 데이터 복원
+    settingData = globalState.get('saved_setting_data');
+    commentReplacements = globalState.get('saved_comment');
+}
+
 // Decorations 업데이트 로직을 별도의 함수로 분리
-function updateAtWordDecorations(activeEditor, decorationType) {
+function updateAtWordDecorations(activeEditor, decorationType, matchWords) {
     if (!activeEditor) {
         return;
     }
@@ -83,19 +95,25 @@ function updateAtWordDecorations(activeEditor, decorationType) {
         const subMatches = subText.match(/@[\w]+/g);  // @로 시작하는 단어에 대한 정규 표현식
     
         if (subMatches) {
-            subMatches.forEach(matchStr => {  // 'match' 대신 'matchStr'로 이름 변경하여 혼동 방지
-                const matchIndex = subText.indexOf(matchStr, lastIndex);  // 마지막으로 찾은 위치 이후로부터 시작
-                const startPos = activeEditor.document.positionAt(match.index + matchIndex);
-                const endPos = activeEditor.document.positionAt(match.index + matchIndex + matchStr.length);
-                const decoration = { range: new vscode.Range(startPos, endPos) };
-                atWordDecorations.push(decoration);
-                lastIndex = matchIndex + matchStr.length;  // 마지막으로 찾은 인덱스 업데이트
+            subMatches.forEach(matchStr => {
+                let matchIndex = subText.indexOf(matchStr, lastIndex);  // 마지막으로 찾은 위치 이후로부터 시작, [문제 해결] 여기로 이동
+                // 여기서 확인: matchStr가 matchWords 중 하나와 일치하는지 확인
+                if (matchWords.includes(matchStr.slice(1))) { // '@' 문자를 제거하고 확인
+                    if (matchIndex !== -1) { 
+                        const startPos = activeEditor.document.positionAt(match.index + matchIndex);
+                        const endPos = activeEditor.document.positionAt(match.index + matchIndex + matchStr.length);
+                        const decoration = { range: new vscode.Range(startPos, endPos) };
+                        atWordDecorations.push(decoration);
+                    }
+                }
+                lastIndex = matchIndex >= 0 ? matchIndex + matchStr.length : lastIndex; // [문제 해결] 유효한 matchIndex만 업데이트
             });
         }
     }
 
     activeEditor.setDecorations(decorationType, atWordDecorations);
 }
+
 
 function initDecorations(context) {
     const decorationType = vscode.window.createTextEditorDecorationType({
@@ -104,7 +122,7 @@ function initDecorations(context) {
 
     const updateDecorations = () => {
         const activeEditor = vscode.window.activeTextEditor;
-        updateAtWordDecorations(activeEditor, decorationType);
+        updateAtWordDecorations(activeEditor, decorationType, KEYWORD_COMMENT);
     };
 
     if (vscode.window.activeTextEditor) {
