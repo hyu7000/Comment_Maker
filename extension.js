@@ -162,6 +162,80 @@ function getTextFromLine(lineIndex) {
     return lineText;
 }
 
+// 주어진 라인 인덱스의 첫 번째 문자열 요소의 전체 파일 내 문자열 인덱스를 반환
+function getFirstCharacterIndexOfLine(lineIndex) {
+    const editor = vscode.window.activeTextEditor;
+    if (editor) {
+        const document = editor.document;
+        const position = new vscode.Position(lineIndex, 0);
+        return document.offsetAt(position);
+    } else {
+        return -1; // 에디터가 없는 경우 -1을 반환
+    }
+}
+
+// 특정 인덱스로부터 {, } 쌍이 맞을때까지 탐색
+function findMatchingBracesFromIndex(startIndex, open_bracket = '{', close_bracket = '}') {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        return { lastIndex: -1, content: "" }; // 에디터가 없을 경우
+    }
+
+    const document = editor.document;
+    const text = document.getText();
+    let count_open_bracket  = 0;
+    let count_close_bracket = 0;
+    let contentStartIndex = startIndex;
+
+    // 시작 인덱스에서부터 문서 끝까지 탐색
+    for (let i = startIndex; i < text.length; i++) {
+        if (text[i] === open_bracket) {
+            count_open_bracket += 1;
+            if (count_open_bracket === 1) {
+                contentStartIndex = i; // 첫 '{' 발견 위치 저장
+            }
+        } else if (text[i] === close_bracket) {
+            count_close_bracket += 1;
+        }
+
+        // 괄호 쌍이 맞춰졌고, 최소 한 쌍 이상의 괄호가 있을 경우
+        if (count_open_bracket > 0 && (count_open_bracket == count_close_bracket)) {
+            return {
+                lastIndex: i,
+                content: text.substring(contentStartIndex, i + 1) // 시작 괄호부터 종료 괄호까지의 문자열
+            };
+        }
+    }
+
+    return { lastIndex: -1, content: "" }; // 쌍이 맞는 괄호를 찾지 못한 경우
+}
+
+// 매개변수의 코드에서 /*S 부터 */ 주석까지 탐색한다.
+function extractAllComments(code) {
+    const startComment = '/*S';
+    const endComment = '*/';
+    let comments = [];
+    let startIndex = 0;
+
+    while (startIndex < code.length) {
+        startIndex = code.indexOf(startComment, startIndex);
+        if (startIndex === -1) break; // 더 이상 시작 문자열이 없으면 반복 종료
+        
+        let contentStart = startIndex + startComment.length; // 주석 내용 시작 인덱스
+        let endIndex = code.indexOf(endComment, contentStart);
+        if (endIndex === -1) break; // 종료 문자열이 없으면 반복 종료
+
+        // 주석 내용 추출 및 배열에 추가
+        comments.push(code.substring(contentStart, endIndex).trim());
+
+        // 다음 탐색을 위한 인덱스 조정
+        startIndex = endIndex + endComment.length;
+    }
+
+    return comments;
+}
+
+
 // 라인의 코드에서 함수 선언 정규식이 매칭되는지 확인한다.
 function parseFunctionDeclaration(lineIndex) {
     const lineText = getTextFromLine(lineIndex);
@@ -524,9 +598,10 @@ function initTestCommand() {
             let match_info = parseFunctionDefinition(line_index);
 
             if (match_info != null) {
-                // let comment = generateCommentFunction(match_info);
-                // insertTextFromLine(line_index, comment);
-                console.log(match_info);
+                let function_definition_start_index = getFirstCharacterIndexOfLine(line_index);
+                let function_body = findMatchingBracesFromIndex(function_definition_start_index);
+                let comment = extractAllComments(function_body.content);
+                console.log(comment);
             }
 
             line_index -= 1;
