@@ -30,8 +30,12 @@
       "title": "Show Custom Settings for Comment Generation"
     },
     {
-      "command": "comment-maker.Debug_CM",
-      "title": "Debug_CM"
+      "command": "comment-maker.GenerateDescriptionComment",
+      "title": "Generate Description Comment"
+    },
+    {
+      "command": "comment-maker.RemoveDescriptionComment",
+      "title": "Remove All Description Comment"
     }]
   },
   "scripts": {

@@ -9,9 +9,14 @@
         <br>
         <input type="text" id="Reviser" name="setting2" value=<!--Reviser-->>
     </div>
+    <div class="setting-item">
+        <label for="OpenAI_API_key">OpenAI API key</label>
+        <br>
+        <input type="text" id="OpenAI_API_key" name="setting3" value=<!--OpenAI_API_key-->>
+    </div>
 
     <div style="float:right;" id="buttons"> 
-        <button class="w-btn" type="button">Default</button>
+        <button class="w-btn" type="button" onclick="removeConfiguration()">Remove ALL</button>
         <button class="w-btn" type="button" onclick="saveSettings()">Save</button>
     </div>
 </div>

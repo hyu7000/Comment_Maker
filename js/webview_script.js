@@ -118,6 +118,21 @@ function saveSettings() {
     vscode.postMessage({ command: 'save_setting_data', setting: settingData });
 }
 
+function removeConfiguration() {
+    // 'setting-item' 클래스를 가진 모든 요소를 선택
+    const settingItems = document.querySelectorAll('.setting-item');
+
+    // 각 설정 항목을 순회하면서 입력 필드를 찾아 값을 지움
+    settingItems.forEach(item => {
+        // 각 setting-item 내의 input 요소 찾기
+        const input = item.querySelector('input[type="text"]');
+        // input 요소가 있다면 해당 값 지우기
+        if (input) {
+            input.value = ''; // 텍스트 입력 공간의 내용을 지움
+        }
+    });
+}
+
 
 function createUpdatedCommentsObject(default_comment) {
     // 새로운 객체를 초기화합니다.

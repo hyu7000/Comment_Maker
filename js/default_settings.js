@@ -1,3 +1,7 @@
+/**************************************************/
+/* Variable                                       */
+/**************************************************/
+
 const C_FILE_COMMENT = 
 `/**
                              *******************
@@ -104,7 +108,8 @@ const DEFAULT_C_FILE_COMMENT_TYPES = [
 
 const DEFAULT_SETTING_DATA = {
     'Project_name':'',
-    'Reviser':''
+    'Reviser':'',
+    'OpenAI_API_key':''
 };
 
 const KEYWORD_COMMENT = [
@@ -116,6 +121,10 @@ const KEYWORD_COMMENT = [
     'component',
     'layer'
 ];
+
+/**************************************************/
+/* module export                                  */
+/**************************************************/
 
 module.exports = { 
     C_FILE_COMMENT,
