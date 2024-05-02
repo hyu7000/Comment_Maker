@@ -11,10 +11,12 @@ The current version has a lot of constraints.
 ## Command
 
 **Show Custom Settings for Comment Generation**
+  
 the Setting viewer show you the tab that can configure custom comment and project name, revisor.
 
 
 **Generate Detail Comment**
+  
 This command generate the detail comment for the function declaration.
 
 ```c
@@ -28,6 +30,7 @@ void someFunction(int a);
 ```
 
 **Generate Normal Comment**
+  
 This command generate the Normal comment for the file.
 
 ```c
@@ -79,5 +82,33 @@ This command generate the Normal comment for the file.
 /*-------------------------------------------------Extern Function---------------------------------------------------*/
 /*********************************************************************************************************************/
 ```
+
+**Generate Description Comment**
+  
+This command generate the Description comment for each function.
+
+```c
+/*S
+ * @function
+ * @name : add_function
+ * @parameter :  
+ * @parameter :
+ * @return :
+ * @description : 
+*/
+static int add_function(int x, int y);
+
+static int add_function(int x, int y)
+{
+    /*S calculate each parameter using the addition operator. */
+    int result = x + y;
+
+    /*S return result by add */ 
+    return result;
+}
+```
+
+In the above code, the function name, return type, and comments between /* and */ are analyzed by AI to write a description.
+The OpenAI API is used, and the API key can be set in 'Show Custom Settings for Comment Generation'.
 
 **Enjoy!**

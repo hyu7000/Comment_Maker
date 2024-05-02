@@ -5,23 +5,9 @@ const {
 } = require('./ai_api_function.js');
 
 const {
-    C_FILE_COMMENT,
-    HEADER_FILE_COMMENT,
-    INCLUDES_COMMENT,
-    MACRO_COMMENT,
-    GLOBAL_VAR_COMMENT,
-    DATA_STRUCTURE_COMMENT,
-    FUNCTION_PROTOTYPES_COMMENT,
-    INTERRUPT_COMMENT,
-    PRIVATE_FUNCTION_COMMENT,
-    EXTERN_FUNCTION_COMMENT,
-
     DEFAULT_COMMENTS,
     DEFAULT_HEADER_FILE_COMMENT_TYPES,
-    DEFAULT_C_FILE_COMMENT_TYPES,
-    DEFAULT_SETTING_DATA,
-
-    KEYWORD_COMMENT
+    DEFAULT_C_FILE_COMMENT_TYPES
 } = require('./default_settings.js');
 
 const {
@@ -66,6 +52,16 @@ function set_settingData(data) {
     console.log(`settingData set`);
 }
 
+let prompt = {};
+
+function get_prompt() {
+    return prompt;
+}
+function set_prompt(data) {
+    prompt = data;
+    console.log(`prompt set`);
+}
+
 /**************************************************/
 /* Extern Function                                */
 /**************************************************/
@@ -86,18 +82,14 @@ function initGenDescriptionByUsingOpenAI() {
         }
 
         // 프롬프트 시작
-        let prompt = `Here is a collection of comment codes, function names, function parameters, and return types.\n`
-        prompt += `The purpose is to utilize this information to describe the function in a way that is easily understandable at a higher level of abstraction.\n`
-        prompt += `The comments are written sequentially according to the function execution order.\n`
-        prompt += `A higher level of abstraction users do not need the details of the features.\n`
-        prompt += `Please do not include function-related information in the description.. Write in under 100 characters.\n`
-        prompt += `Multi-line comments may contain asterisks (*). Take this into account when analyzing.\n`        
+        let local_prompt = prompt['DESCRIPTION_PROMPT'];
 
 
         /************ c file ************/
         let func_description_line_index_obj_in_cfile = extractFunctionCommentsInFile();
 
-        let descriptions = await generateDescriptions(prompt);
+        console.log(`local_prompt : ${local_prompt}`);
+        let descriptions = await generateDescriptions(local_prompt);
 
         // 각 함수 설명을 적절한 줄에 삽입
         descriptions = descriptions.filter(descriptionObj => {
@@ -574,6 +566,8 @@ module.exports = {
     set_OPENAI_API_KEY,
     get_settingData,
     set_settingData,
+    get_prompt,
+    set_prompt,
     initGenDescriptionByUsingOpenAI,
     initRemoveDescriptionInFunction,
     initGenDetailCommand,

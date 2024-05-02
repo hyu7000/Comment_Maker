@@ -108,31 +108,130 @@ function getSettingsData() {
     });
 
     // 설정 값을 저장하거나 후속 처리
-    console.log(settings); // 콘솔에 결과 출력, 실제 사용 시 이 부분에 후속 처리 코드를 추가할 수 있음
+    console.log(`settings : ${settings}`); // 콘솔에 결과 출력, 실제 사용 시 이 부분에 후속 처리 코드를 추가할 수 있음
     return settings; // 필요에 따라 설정 객체를 반환
 }
 
-function saveSettings() {
-    const settingData = getSettingsData();
+function getPrompt() {
+    // 설정 항목을 저장할 객체 초기화
+    const prompt = {};
 
-    vscode.postMessage({ command: 'save_setting_data', setting: settingData });
+    // 'prompt-label' 클래스를 가진 모든 요소를 선택
+    const promptItems = document.querySelectorAll('.prompt-label');
+
+    // 각 설정 항목을 순회하면서, id와 해당 값으로 객체를 구성
+    promptItems.forEach(item => {
+        // label의 for 속성을 사용하여 관련된 textarea 요소 찾기
+        const inputId = item.getAttribute('for');
+        const input = document.getElementById(inputId);
+        // input 요소의 id와 값으로 prompt 객체를 업데이트
+        if (input) {
+            prompt[input.id] = input.value;
+        }
+    });
+
+    // 설정 값을 저장하거나 후속 처리
+    console.log(prompt); // 콘솔에 객체 출력 (이전 코드는 문자열로 출력했지만, 객체 전체를 보기 위해 수정)
+    return prompt; // 필요에 따라 설정 객체를 반환
 }
 
-function removeConfiguration() {
-    // 'setting-item' 클래스를 가진 모든 요소를 선택
-    const settingItems = document.querySelectorAll('.setting-item');
+function saveSettings(tab) {
+    switch (tab)
+    {
+        case 'tab2':
+            const settingData = getSettingsData();
+            vscode.postMessage({ command: 'save_setting_data', setting: settingData });
+            break;
+        case 'tab3':            
+            const prompt = getPrompt();
+            vscode.postMessage({ command: 'save_prompt', setting: prompt });
+            break;
+    }
+}
 
+function removeConfiguration(tab) {
+    switch(tab)
+    {
+        case 'tab2':
+            // 'setting-item' 클래스를 가진 모든 요소를 선택
+            const settingItems = document.querySelectorAll('.setting-item');
+        
+            // 각 설정 항목을 순회하면서 입력 필드를 찾아 값을 지움
+            settingItems.forEach(item => {
+                // 각 setting-item 내의 input 요소 찾기
+                const input = item.querySelector('input[type="text"]');
+                // input 요소가 있다면 해당 값 지우기
+                if (input) {
+                    input.value = ''; // 텍스트 입력 공간의 내용을 지움
+                }
+            });
+            break;
+        case 'tab3':
+            // 'prompt-label' 클래스를 가진 모든 요소를 선택
+            const promptItems = document.querySelectorAll('.prompt-label');
+        
+            // 각 설정 항목을 순회하면서 입력 필드를 찾아 값을 지움
+            promptItems.forEach(item => {
+                // 각 prompt-label 내의 input 요소 찾기                
+                const inputId = item.getAttribute('for');
+                const input = document.getElementById(inputId);
+                // input 요소가 있다면 해당 값 지우기
+                if (input) {
+                    input.value = ''; // 텍스트 입력 공간의 내용을 지움
+                }
+            });
+            break;
+    }
+}
+
+function setDefaultData(tab) {
+    switch(tab)
+    {        
+        case 'tab1':
+            vscode.postMessage({ command: 'requeset_default_comment'});
+            break;
+        case 'tab3':
+            vscode.postMessage({ command: 'requeset_default_prompt'});
+            break;
+    }
+}
+
+function setDefaultPrompt(prompt) {
+    // 'prompt-label' 클래스를 가진 모든 요소를 선택
+    const promptItems = document.querySelectorAll('.prompt-label');
+        
     // 각 설정 항목을 순회하면서 입력 필드를 찾아 값을 지움
-    settingItems.forEach(item => {
-        // 각 setting-item 내의 input 요소 찾기
-        const input = item.querySelector('input[type="text"]');
+    promptItems.forEach(item => {
+        // 각 prompt-label 내의 input 요소 찾기                
+        const inputId = item.getAttribute('for');
+        let default_prompt = '';
+        if ( inputId in prompt) {
+            default_prompt = prompt[inputId];
+        }
+        const input = document.getElementById(inputId);
         // input 요소가 있다면 해당 값 지우기
         if (input) {
-            input.value = ''; // 텍스트 입력 공간의 내용을 지움
+            input.value = default_prompt; // 텍스트 입력 공간의 내용을 지움
         }
     });
 }
 
+function setDefaultComment(comment) {
+    const commentItems = document.querySelectorAll('.comment-label');
+
+    commentItems.forEach(item => {
+        const inputId = item.getAttribute('for');
+        let default_comment = '';
+        if ( inputId in comment) {
+            default_comment = comment[inputId];
+        }
+        const input = document.getElementById(inputId);
+        // input 요소가 있다면 해당 값 지우기
+        if (input) {
+            input.value = default_comment; // 텍스트 입력 공간의 내용을 지움
+        }
+    });
+}
 
 function createUpdatedCommentsObject(default_comment) {
     // 새로운 객체를 초기화합니다.
@@ -156,21 +255,44 @@ function createUpdatedCommentsObject(default_comment) {
     return updatedComments;
 }
 
+function autoResizeElementsByClassName(class_name) {
+    const elements = document.getElementsByClassName(class_name);
+    for (let i = 0; i < elements.length; i++) {
+        autoResizeTextarea(elements[i]);
+    }
+}
+
 // 메시지 수신 리스너
 window.addEventListener('message', event => {
     const message = event.data; // 수신된 메시지
     switch (message.command) {
-        case 'updateContent':
-            // .content 영역에 수신된 HTML 컨텐츠로 업데이트
-            document.querySelector('.content').innerHTML = message.content;
-            break;
-
         case 'updateContent_Tab1':
             document.querySelector('.content').innerHTML = message.content;
-            const textareas = document.getElementsByClassName('comment_textarea');
-            for (let i = 0; i < textareas.length; i++) {
-                autoResizeTextarea(textareas[i]);
-            }
+            console.log('updateContent_Tab1');
+            autoResizeElementsByClassName('comment_textarea');
+            break;
+
+        case 'updateContent_Tab2':
+            document.querySelector('.content').innerHTML = message.content;
+            console.log('updateContent_Tab2');
+            break;
+
+        case 'updateContent_Tab3':
+            document.querySelector('.content').innerHTML = message.content;
+            console.log('updateContent_Tab3');
+            autoResizeElementsByClassName('prompt_textarea');
+            break;
+
+        case 'response_default_prompt':
+            setDefaultPrompt(message.default_prompt);
+            autoResizeElementsByClassName('prompt_textarea');
+            console.log('response_default_prompt')
+            break;
+        
+        case 'response_default_comment':
+            setDefaultComment(message.default_comment);
+            autoResizeElementsByClassName('comment_textarea');
+            console.log('response_default_prompt')
             break;
 
         case 'saved_successfully':            

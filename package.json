@@ -3,7 +3,7 @@
   "displayName": "Comment_Maker",
   "description": "Comment_Maker help us to add comment for generating docs.\nit will be reduce time to writing code and a typing error.",
   "publisher": "hyu7000",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "icon": "logo.png",
   "engines": {
     "vscode": "^1.86.0"

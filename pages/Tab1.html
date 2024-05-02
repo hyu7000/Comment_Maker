@@ -1,36 +1,36 @@
 <div>
-    <label class="comment-label" for="c_file">Header File</label>
+    <label class="comment-label" for="HEADER_FILE_COMMENT">Header File</label>
     <textarea id="HEADER_FILE_COMMENT" class="comment_textarea" oninput="autoResizeTextarea(this)"><!--HEADER_FILE_COMMENT--></textarea>
 
-    <label class="comment-label" for="header_file">C File</label>
+    <label class="comment-label" for="C_FILE_COMMENT">C File</label>
     <textarea id="C_FILE_COMMENT" class="comment_textarea" oninput="autoResizeTextarea(this)"><!--C_FILE_COMMENT--></textarea>
 
-    <label class="comment-label" for="Include">Include</label>
+    <label class="comment-label" for="INCLUDES_COMMENT">Include</label>
     <textarea id="INCLUDES_COMMENT" class="comment_textarea" oninput="autoResizeTextarea(this)"><!--INCLUDES_COMMENT--></textarea>
 
-    <label class="comment-label" for="Macro">Macro</label>
+    <label class="comment-label" for="MACRO_COMMENT">Macro</label>
     <textarea id="MACRO_COMMENT" class="comment_textarea" oninput="autoResizeTextarea(this)"><!--MACRO_COMMENT--></textarea>
 
-    <label class="comment-label" for="Global_Variable">Global Variable</label>
+    <label class="comment-label" for="GLOBAL_VAR_COMMENT">Global Variable</label>
     <textarea id="GLOBAL_VAR_COMMENT" class="comment_textarea" oninput="autoResizeTextarea(this)"><!--GLOBAL_VAR_COMMENT--></textarea>
 
-    <label class="comment-label" for="Data_Structures">Data Structures</label>
+    <label class="comment-label" for="DATA_STRUCTURE_COMMENT">Data Structures</label>
     <textarea id="DATA_STRUCTURE_COMMENT" class="comment_textarea" oninput="autoResizeTextarea(this)"><!--DATA_STRUCTURE_COMMENT--></textarea>
 
-    <label class="comment-label" for="Function_Prototypes">Function Prototypes</label>
+    <label class="comment-label" for="FUNCTION_PROTOTYPES_COMMENT">Function Prototypes</label>
     <textarea id="FUNCTION_PROTOTYPES_COMMENT" class="comment_textarea" oninput="autoResizeTextarea(this)"><!--FUNCTION_PROTOTYPES_COMMENT--></textarea>
 
-    <label class="comment-label" for="Interrupt">Interrupt</label>
+    <label class="comment-label" for="INTERRUPT_COMMENT">Interrupt</label>
     <textarea id="INTERRUPT_COMMENT" class="comment_textarea" oninput="autoResizeTextarea(this)"><!--INTERRUPT_COMMENT--></textarea>
 
-    <label class="comment-label" for="Private_Function">Private Function</label>
+    <label class="comment-label" for="PRIVATE_FUNCTION_COMMENT">Private Function</label>
     <textarea id="PRIVATE_FUNCTION_COMMENT" class="comment_textarea" oninput="autoResizeTextarea(this)"><!--PRIVATE_FUNCTION_COMMENT--></textarea>
 
-    <label class="comment-label" for="Extern_Function">Extern Function</label>
+    <label class="comment-label" for="EXTERN_FUNCTION_COMMENT">Extern Function</label>
     <textarea id="EXTERN_FUNCTION_COMMENT" class="comment_textarea" oninput="autoResizeTextarea(this)"><!--EXTERN_FUNCTION_COMMENT--></textarea>
 
     <div style="float:right;" id="buttons"> 
-        <button class="w-btn" type="button">Default</button>
+        <button class="w-btn" type="button" onclick="setDefaultData('tab1')">Default</button>
         <button class="w-btn" type="button" onclick="saveComment()">Save</button>
     </div>
 </div>

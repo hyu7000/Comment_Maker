@@ -5,30 +5,17 @@ const fs = require('fs');
 const path = require('path');
 
 const {
-    C_FILE_COMMENT,
-    HEADER_FILE_COMMENT,
-    INCLUDES_COMMENT,
-    MACRO_COMMENT,
-    GLOBAL_VAR_COMMENT,
-    DATA_STRUCTURE_COMMENT,
-    FUNCTION_PROTOTYPES_COMMENT,
-    INTERRUPT_COMMENT,
-    PRIVATE_FUNCTION_COMMENT,
-    EXTERN_FUNCTION_COMMENT,
-
+    DEFAULT_PROMPT,
     DEFAULT_COMMENTS,
-    DEFAULT_HEADER_FILE_COMMENT_TYPES,
-    DEFAULT_C_FILE_COMMENT_TYPES,
     DEFAULT_SETTING_DATA,
-
-    KEYWORD_COMMENT
 } = require('./js/default_settings.js');
 
 const {
-    get_OPENAI_API_KEY,
     set_OPENAI_API_KEY,
     get_settingData,
     set_settingData,
+    get_prompt,
+    set_prompt,
     initGenDescriptionByUsingOpenAI,
     initRemoveDescriptionInFunction,
     initGenDetailCommand,
@@ -118,13 +105,15 @@ function deactivate() {}
 /* Private Function                               */
 /**************************************************/
 
-function restoreData(context) {
-    const globalState = context.globalState;
-    
+function restoreData(context) {    
     // 데이터 복원
     commentReplacements    = context.globalState.get('saved_comment',      DEFAULT_COMMENTS);
-    const temp_settingData = context.globalState.get('saved_setting_data', DEFAULT_SETTING_DATA)
+    const temp_prompt      = context.globalState.get('saved_prompt',       DEFAULT_PROMPT);
+    const temp_settingData = context.globalState.get('saved_setting_data', DEFAULT_SETTING_DATA);
     
+    // prompt 할당
+    set_prompt(temp_prompt)
+
     // settingData 할당
     set_settingData(temp_settingData);
 
@@ -168,7 +157,7 @@ function initWebView(context) {
         let htmlContent = fs.readFileSync(htmlPath, 'utf8');
 
         htmlContent = htmlContent.replace('SCRIPT_SRC_PLACEHOLDER', scriptUri)
-                                 .replace('STYLE_SRC_PLACEHOLDER', styleUri);
+                                 .replace('STYLE_SRC_PLACEHOLDER',  styleUri );
         panel.webview.html = htmlContent;
         
         // Tab1 초기화
@@ -192,16 +181,17 @@ function initWebView(context) {
                     else if (message.tabName == 'Tab2') {
                         const temp_settingData = get_settingData();
                         tabContent = replaceAllComments(tabContent, temp_settingData);
-                        panel.webview.postMessage({ command: 'updateContent', content: tabContent });
+                        panel.webview.postMessage({ command: 'updateContent_Tab2', content: tabContent });
+                    }
+                    else if (message.tabName == 'Tab3') {
+                        const temp_prompt = get_prompt()
+                        tabContent = replaceAllComments(tabContent, temp_prompt);
+                        panel.webview.postMessage({ command: 'updateContent_Tab3', content: tabContent });
                     }   
                     else {
                         panel.webview.postMessage({ command: 'updateContent', content: tabContent });
                     }
 
-                    break;
-
-                case 'request_default_comments':
-                    panel.webview.postMessage({ command: 'response_default_comments', default_comments: DEFAULT_COMMENTS });
                     break;
 
                 case 'save_comment':        
@@ -224,6 +214,25 @@ function initWebView(context) {
                         // 데이터 저장 중 오류가 발생했을 때 실행할 코드
                         console.error('Error saving the comment:', error);
                     });
+                    break;
+
+                case 'save_prompt':
+                    context.globalState.update('saved_prompt', message.setting).then(() => {
+                        // 데이터 저장이 성공적으로 완료된 후 실행할 코드
+                        panel.webview.postMessage({ command: 'saved_successfully'});
+                        set_prompt(message.setting);
+                    }).catch((error) => {
+                        // 데이터 저장 중 오류가 발생했을 때 실행할 코드
+                        console.error('Error saving the comment:', error);
+                    });
+                    break;
+
+                case 'requeset_default_comment':
+                    panel.webview.postMessage({ command: 'response_default_comment', default_comment:DEFAULT_COMMENTS });
+                    break;
+
+                case 'requeset_default_prompt':
+                    panel.webview.postMessage({ command: 'response_default_prompt', default_prompt:DEFAULT_PROMPT });
                     break;
             }
         }, undefined, context.subscriptions);
