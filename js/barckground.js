@@ -1,7 +1,8 @@
 const vscode = require('vscode');
 
 const {
-    KEYWORD_COMMENT
+    KEYWORD_SX_COMMENT,
+    KEYWORD_CX_COMMENT
 } = require('./default_settings.js');
 
 /**************************************************/
@@ -10,15 +11,21 @@ const {
 
 // 데코레이션 초기화
 function initDecorations(context) {
+    // 데코레이션 색상 정의
     const decorationType = vscode.window.createTextEditorDecorationType({
         color: '#3E9CD6' // 텍스트 색상을 파란색으로 설정
     });
 
+    // 데코레이션 업데이트 함수 정의
     const updateDecorations = () => {
         const activeEditor = vscode.window.activeTextEditor;
-        updateAtWordDecorations(activeEditor, decorationType, KEYWORD_COMMENT);
+        const keywordSxRegex = /\/\*S[\s\S]*?\*\//g; // /*S ... */ 블록
+        const keywordCxRegex = /\/\*C[\s\S]*?\*\//g; // /*C ... */ 블록
+        updateCommentDecorations(activeEditor, decorationType, KEYWORD_SX_COMMENT, keywordSxRegex);
+        updateCommentDecorations(activeEditor, decorationType, KEYWORD_CX_COMMENT, keywordCxRegex);
     };
 
+    // 첫 로딩될때 정의된 updateDecorations 호출
     if (vscode.window.activeTextEditor) {
         updateDecorations(); // 초기 상태에서 decoration 업데이트
     }
@@ -39,14 +46,14 @@ function initDecorations(context) {
 /**************************************************/
 
 // Decorations 업데이트 로직을 별도의 함수로 분리
-function updateAtWordDecorations(activeEditor, decorationType, matchWords) {
+const decorations = [];
+function updateCommentDecorations(activeEditor, decorationType, matchWords, blockRegex) {
     if (!activeEditor) {
         return;
     }
 
-    const regEx = /\/\*S[\s\S]*?\*\//g; // /*S ... */에 대한 정규 표현식
+    const regEx = blockRegex; // /*S ... */에 대한 정규 표현식
     const text = activeEditor.document.getText();
-    const atWordDecorations = [];
     let match;
 
     while ((match = regEx.exec(text))) {
@@ -63,7 +70,7 @@ function updateAtWordDecorations(activeEditor, decorationType, matchWords) {
                         const startPos = activeEditor.document.positionAt(match.index + matchIndex);
                         const endPos = activeEditor.document.positionAt(match.index + matchIndex + matchStr.length);
                         const decoration = { range: new vscode.Range(startPos, endPos) };
-                        atWordDecorations.push(decoration);
+                        decorations.push(decoration);
                     }
                 }
                 lastIndex = matchIndex >= 0 ? matchIndex + matchStr.length : lastIndex; // [문제 해결] 유효한 matchIndex만 업데이트
@@ -71,7 +78,7 @@ function updateAtWordDecorations(activeEditor, decorationType, matchWords) {
         }
     }
 
-    activeEditor.setDecorations(decorationType, atWordDecorations);
+    activeEditor.setDecorations(decorationType, decorations);
 }
 
 /**************************************************/

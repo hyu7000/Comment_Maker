@@ -1,9 +1,9 @@
 {
   "name": "comment-maker",
-  "displayName": "Comment_Maker",
-  "description": "Comment_Maker help us to add comment for generating docs.\nit will be reduce time to writing code and a typing error.",
+  "displayName": "Comment_Gen",
+  "description": "Comment_Gen help us to add comment for generating docs.\nit will be reduce time to writing code and a typing error.",
   "publisher": "hyu7000",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "icon": "logo.png",
   "engines": {
     "vscode": "^1.86.0"
@@ -19,8 +19,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "comment-maker.GenerateDetailComment",
-        "title": "Generate Detail Comment"
+        "command": "comment-maker.GenerateSxComment",
+        "title": "Generate Sx Comment"
+      },
+      {
+        "command": "comment-maker.GenerateCxComment",
+        "title": "Generate Cx Comment"
       },
       {
         "command": "comment-maker.GenerateNormalComment",
@@ -29,16 +33,17 @@
       {
         "command": "comment-maker.Settings",
         "title": "Show Custom Settings for Comment Generation"
-      },
-      {
-        "command": "comment-maker.GenerateDescriptionComment",
-        "title": "Generate Description Comment"
-      },
-      {
-        "command": "comment-maker.RemoveDescriptionComment",
-        "title": "Remove All Description Comment"
       }
-    ]
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "comment-maker.GenerateCxComment",
+          "when": "editorHasSelection",
+          "group": "z_commands"
+        }
+      ]
+    }
   },
   "scripts": {
     "lint": "eslint .",
@@ -59,6 +64,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/hyu7000/Comment_Maker.git"
+    "url": "https://github.com/hyu7000/Comment_Gen.git"
   }
 }

@@ -5,31 +5,21 @@ const fs = require('fs');
 const path = require('path');
 
 const {
-    DEFAULT_PROMPT,
     DEFAULT_COMMENTS,
     DEFAULT_SETTING_DATA,
 } = require('./js/default_settings.js');
 
 const {
-    set_OPENAI_API_KEY,
     get_settingData,
     set_settingData,
-    get_prompt,
-    set_prompt,
-    initGenDescriptionByUsingOpenAI,
-    initRemoveDescriptionInFunction,
-    initGenDetailCommand,
-    initGenNormalCommand
+    initGenSxCommentCommand,
+    initGenNormalCommand,
+    initGenCxCommentCommand
 } = require('./js/generation_comment.js')
 
 const {
     initDecorations
 } = require('./js/barckground.js')
-
-const {
-    initGenDetailCommentBtn
-} = require('./js/user_interface.js')
-
 
 let commentReplacements = {};
 
@@ -50,24 +40,19 @@ function activate(context) {
 
     /**************************************************/
     /* Initialize Command                             */
-    /**************************************************/
-
-    // 함수 설명 요약 생성 커맨드 초기화
-    let gen_description_comment = initGenDescriptionByUsingOpenAI();
-    context.subscriptions.push(gen_description_comment);
-
-    // 생성된 함수 설명 주석을 일괄 제거 커맨드 초기화
-    let remove_description_comment = initRemoveDescriptionInFunction();
-    context.subscriptions.push(remove_description_comment);
-
-    // 디테일 주석 생성 커맨드 초기화
-    let gen_detail_comment = initGenDetailCommand();
-    context.subscriptions.push(gen_detail_comment);
+    /**************************************************/    
 
     // 일반 주석 생성 커맨드 초기화
     let gen_normal_comment = initGenNormalCommand();
     context.subscriptions.push(gen_normal_comment);
 
+    // Sx 주석 생성 커맨드 초기화
+    let gen_sx_comment = initGenSxCommentCommand();
+    context.subscriptions.push(gen_sx_comment);
+
+    // Cx 주석 생성 커맨드 초기화
+    let gen_cx_comment = initGenCxCommentCommand();
+    context.subscriptions.push(gen_cx_comment);
 
     /**************************************************/
     /* Initialize Web View                            */
@@ -75,17 +60,7 @@ function activate(context) {
 
     // 웹뷰 초기화
     let open_page = initWebView(context);
-    context.subscriptions.push(open_page);
-
-
-    /**************************************************/
-    /* Initialize UI                                  */
-    /**************************************************/
-
-    // 상태 바에 디테일 주석 버튼 항목 생성
-    let genDetailCommentBtn = initGenDetailCommentBtn();
-    context.subscriptions.push(genDetailCommentBtn);
-    
+    context.subscriptions.push(open_page); 
 
     /**************************************************/
     /* Initialize Background                          */
@@ -105,20 +80,13 @@ function deactivate() {}
 /* Private Function                               */
 /**************************************************/
 
-function restoreData(context) {    
+function restoreData(context) {
     // 데이터 복원
     commentReplacements    = context.globalState.get('saved_comment',      DEFAULT_COMMENTS);
-    const temp_prompt      = context.globalState.get('saved_prompt',       DEFAULT_PROMPT);
     const temp_settingData = context.globalState.get('saved_setting_data', DEFAULT_SETTING_DATA);
-    
-    // prompt 할당
-    set_prompt(temp_prompt)
 
     // settingData 할당
     set_settingData(temp_settingData);
-
-    // API Key 할당
-    set_OPENAI_API_KEY(temp_settingData.OpenAI_API_key);
 }
 
 function replaceHtmlCode(htmlCode, detectCode, replace) {
@@ -183,11 +151,6 @@ function initWebView(context) {
                         tabContent = replaceAllComments(tabContent, temp_settingData);
                         panel.webview.postMessage({ command: 'updateContent_Tab2', content: tabContent });
                     }
-                    else if (message.tabName == 'Tab3') {
-                        const temp_prompt = get_prompt()
-                        tabContent = replaceAllComments(tabContent, temp_prompt);
-                        panel.webview.postMessage({ command: 'updateContent_Tab3', content: tabContent });
-                    }   
                     else {
                         panel.webview.postMessage({ command: 'updateContent', content: tabContent });
                     }
@@ -216,23 +179,8 @@ function initWebView(context) {
                     });
                     break;
 
-                case 'save_prompt':
-                    context.globalState.update('saved_prompt', message.setting).then(() => {
-                        // 데이터 저장이 성공적으로 완료된 후 실행할 코드
-                        panel.webview.postMessage({ command: 'saved_successfully'});
-                        set_prompt(message.setting);
-                    }).catch((error) => {
-                        // 데이터 저장 중 오류가 발생했을 때 실행할 코드
-                        console.error('Error saving the comment:', error);
-                    });
-                    break;
-
                 case 'requeset_default_comment':
                     panel.webview.postMessage({ command: 'response_default_comment', default_comment:DEFAULT_COMMENTS });
-                    break;
-
-                case 'requeset_default_prompt':
-                    panel.webview.postMessage({ command: 'response_default_prompt', default_prompt:DEFAULT_PROMPT });
                     break;
             }
         }, undefined, context.subscriptions);

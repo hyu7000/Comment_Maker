@@ -1,6 +1,6 @@
-# comment-maker README
+# Comment_Gen README
 
-Comment_Maker help us to add comment for generating docs.
+Comment_Gen help us to add comment for generating docs.
 This extension will be reduce time to writing code and a typing error.
 
 ## Features
@@ -15,9 +15,9 @@ The current version has a lot of constraints.
 the Setting viewer show you the tab that can configure custom comment and project name, revisor.
 
 
-**Generate Detail Comment**
+**Generate Sx Comment**
   
-This command generate the detail comment for the function declaration.
+This command generate the Sx comment for the function declaration.
 
 ```c
 /*S
@@ -25,6 +25,19 @@ This command generate the detail comment for the function declaration.
  * @name : someFunction
  * @parameter : 
  * @description : 
+*/
+void someFunction(int a);
+```
+
+**Generate Cx Comment**
+  
+This command generate the Cx comment.
+
+```c
+/*C
+ * @Type : public function
+ * @Name : someFunction
+ * @Description : ~!@#$%
 */
 void someFunction(int a);
 ```
@@ -82,33 +95,5 @@ This command generate the Normal comment for the file.
 /*-------------------------------------------------Extern Function---------------------------------------------------*/
 /*********************************************************************************************************************/
 ```
-
-**Generate Description Comment**
-  
-This command generate the Description comment for each function.
-
-```c
-/*S
- * @function
- * @name : add_function
- * @parameter :  
- * @parameter :
- * @return :
- * @description : 
-*/
-static int add_function(int x, int y);
-
-static int add_function(int x, int y)
-{
-    /*S calculate each parameter using the addition operator. */
-    int result = x + y;
-
-    /*S return result by add */ 
-    return result;
-}
-```
-
-In the above code, the function name, return type, and comments between /* and */ are analyzed by AI to write a description.
-The OpenAI API is used, and the API key can be set in 'Show Custom Settings for Comment Generation'.
 
 **Enjoy!**
