@@ -19,7 +19,15 @@ const {
 
 const {
     initDecorations
-} = require('./js/barckground.js')
+} = require('./js/decoration.js')
+
+const {
+    initIntelliSense
+} = require('./js/IntelliSense.js')
+
+const {
+    initHover
+} = require('./js/hover.js')
 
 let commentReplacements = {};
 
@@ -68,6 +76,12 @@ function activate(context) {
 
     // 주석 데코레이션 설정
     initDecorations(context);    
+
+    // 인텔리센스(자동완성) 설정
+    context.subscriptions.push(initIntelliSense());
+
+    // 호버 설정
+    context.subscriptions.push(initHover());
 
     // 저장된 값 불러오기
     restoreData(context);

@@ -3,7 +3,7 @@
   "displayName": "Comment_Gen",
   "description": "Comment_Gen help us to add comment for generating docs.\nit will be reduce time to writing code and a typing error.",
   "publisher": "hyu7000",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "icon": "logo.png",
   "engines": {
     "vscode": "^1.86.0"
